@@ -1,0 +1,52 @@
+html, body {
+  margin: 0;
+  padding: 0.5rem;
+}
+
+body {
+  font-size: 1rem;
+  background: #fff;
+}
+
+h1 {
+  text-align: center;
+  margin: 0 0 1rem 0;
+}
+
+p {
+  font-size: inherit;
+}
+
+#loginButton{
+  margin-top: 50%;
+
+  width: 50%;
+  height: 3em;
+}
+
+.center
+{
+  display:block;
+  margin-left: auto;
+  margin-right: auto;
+  float: none;
+}
+
+.loginFieldBlock
+{
+  margin-top: 1em;
+}
+
+.loginFieldLabel
+{
+    font-size: 10pt;
+}
+
+.loginField
+{
+  clear:both;
+  float:right;
+  font-size: 10pt;
+  width: 70%;
+}
+
