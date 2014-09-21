@@ -46,32 +46,25 @@
         <script type="text/javascript" src="js/controllers.js"></script>
     </head>
     <body ng-controller='AppCtrl' style="background-color: #1D1D1D">
-        <h1 ng-model="test" />
-        <h1 ng-show="active" class="text-center" style="color: white">FxOS Scrobbler</h1>
+        <h1 class="text-center" style="color: white">FxOS Scrobbler</h1>
         <h4 class="text-center" style="color: white; margin-top: -20px">Powered by
         <img src="img/icons/lastfm_Logo.png" style="width: 60px; height: 16px; margin-top: -6px" />
         </h4>
-        <form ng-show="active">
+        <form>
             <div class="row" style="margin-top: 40px">
                 <div class="small-10 small-offset-1 columns">
-                    <label class="error">
-                       <input type="text" placeholder="Last.FM Username"/>
-                    </label>
-                    <small class="error">Invalid username</small>
+                    <input type="text" placeholder="Last.FM Username" ng-model="user.name"/>
                 </div>
             </div>
             
             <div class="row">
                 <div class="small-10 small-offset-1 columns">
-                    <label class="error">
-                       <input type="text" placeholder="Last.FM Password"/>
-                    </label>
-                    <small class="error">Invalid password</small>
+                    <input type="password" placeholder="Last.FM Password" ng-model="user.password"/>
                 </div>
             </div>
             <div class="row">
                 <div class="small-10 small-offset-1 columns">
-                   <a class="button expand">Login</a>
+                   <a class="button expand" ng-click="login()">Login</a>
                 </div>
             </div>
             
