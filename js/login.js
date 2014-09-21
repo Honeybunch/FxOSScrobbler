@@ -10,81 +10,173 @@ window.addEventListener('DOMContentLoaded', function() {
 
   var translate = navigator.mozL10n.get;
 
+  navigator.mozL10n.ready();
+  
   // We want to wait until the localisations library has loaded all the strings.
   // So we'll tell it to let us know once it's ready.
   navigator.mozL10n.once(start);
 
   // ---
+  //Enum for determining what's being viewed on this page
+  var PageState = {
+    LOGIN:0,
+    SETTINGS: 1,
+    NOW_PLAYING: 2,
+    STATS: 3,
+    PROFILE: 4
+  }
+  
+  var currentState = PageState.LOGIN;
+  
+  var loginBlock;
+  var settingsBlock
+  var nowPlayingBlock;
+  var statsBlock;
+  var profileBlock;
+  var footer;
+  
+  var settingsButton;
+  var nowPlayingButton;
+  var statsButton;
+  var profileButton;
+  
   var loginButton;
   var usernameField;
   var passwordField;
   
-  var apiKey = "10379ce465238e42fbc1a7aef57b49cd";
-  var apiSecret = "4db90ca38c72a8b2e855ba19f1328f0d";
-  
-  var name;
-  var sessionKey;
-  
   function start() 
   {
-    //Read in a previous session if it exists
-    var previousSession = hasPreviousSession();
+    loginBlock = document.querySelector('#loginBlock');
+    settingsBlock = document.querySelector('#settingsBlock');
+    nowPlayingBlock = document.querySelector('#nowPlayingBlock');
+    statsBlock = document.querySelector('#statsBlock');
+    profileBlock = document.querySelector('#profileBlock');
+    footer = document.querySelector('footer');
+
+    settingsButton = document.querySelector('#settingsButton');
+    nowPlayingButton = document.querySelector('#nowPlayingButton');
+    statsButton = document.querySelector('#statsButton');
+    profileButton = document.querySelector('#profileButton');
     
-    //If it has one, jump to the next activity
-    if(previousSession)
+    settingsButton.onclick = function(e){settingsClick(e)};
+    nowPlayingButton.onclick = function(e){nowPlayingClick(e)};
+    statsButton.onclick = function(e){statsClick(e)};
+    profileButton.onclick = function(e){profileClick(e)};
+    
+    loadSession(setupNowPlaying, setupLogin);
+  }
+  
+  function hideOthers(visible)
+  {
+    switch(visible)
     {
-      
-    }
-    //If it doesn't, we'll setup the login screen
-    else
-    {
-      setupLogin();
+      case PageState.LOGIN:
+        loginBlock.style.display='inline';
+        
+        settingsBlock.style.display='none';
+        nowPlayingBlock.style.display='none';
+        statsBlock.style.display='none';
+        profileBlock.style.display='none';
+        footer.style.display='none';
+        break;
+      case PageState.SETTINGS:
+        settingsBlock.style.display='inline';
+        footer.style.display='inline';
+        
+        loginBlock.style.display='none';
+        nowPlayingBlock.style.display='none';
+        statsBlock.style.display='none';
+        profileBlock.style.display='none';
+        break;
+      case PageState.NOW_PLAYING:
+        nowPlayingBlock.style.display='inline';
+        footer.style.display='inline';
+        
+        loginBlock.style.display='none';
+        settingsBlock.style.display='none';
+        statsBlock.style.display='none';
+        profileBlock.style.display='none';
+        break;
+      case PageState.STATS:
+        statsBlock.style.display='inline';
+        footer.style.display='inline';
+        
+        loginBlock.style.display='none';
+        settingsBlock.style.display='none';
+        nowPlayingBlock.style.display='none';
+        profileBlock.style.display='none';
+        break;
+      case PageState.PROFILE:
+        profileBlock.style.display='inline';
+        footer.style.display='inline';
+        
+        loginBlock.style.display='none';
+        settingsBlock.style.display='none';
+        nowPlayingBlock.style.display='none';
+        statsBlock.style.display='none';
+        break;
     }
   }
   
-  function hasPreviousSession()
-  {
-    var sdcard = navigator.getDeviceStorage('sdcard');
-    var request = sdcard.get('session.json');
-    
-    //If we open the file, load settings
-    request.onsuccess = function()
-    {
-      var file = this.result;
-      
-      var reader = new FileReader();
-      reader.onload = function(e)
-      {
-        var result = reader.result;
-        
-        var session = JSON.parse(reader.result);
-      
-        //Read in the session to variables we can pass to the next WebActivity
-        name = session['name'];
-        sessionKey = session['key'];
-        
-        console.log(session);
-      }
-      
-      reader.readAsText(file);
-      
-      return true;
-    }
-    
-    //Otherwise we'll have to log in
-    request.onerror = function()
-    {
-      return false;
-    }
-  }
+  /*
+   Setup Functions
+  */
   
   function setupLogin()
   {
+    hideOthers(PageState.LOGIN);
+    
     loginButton = document.querySelector('#loginButton');
     usernameField = document.querySelector('#usernameField');
     passwordField = document.querySelector('#passwordField');
     
     loginButton.onclick = function(e){loginClick(e)};
+  }
+  
+  function setupSettings()
+  {
+    hideOthers(PageState.SETTINGS);
+  }
+  
+  function setupNowPlaying()
+  {
+    hideOthers(PageState.NOW_PLAYING);
+  }
+  
+  function setupStats()
+  {
+    hideOthers(PageState.STATS);
+    
+    
+  }
+  
+  function setupProfile()
+  {
+    hideOthers(PageState.PROFILE);
+  }
+  
+  /*
+   Button Event
+  */
+  
+  function settingsClick(e)
+  {
+    setupSettings();
+  }
+  
+  function nowPlayingClick(e)
+  {
+    setupNowPlaying();
+  }
+  
+  function statsClick(e)
+  {
+    setupStats();
+  }
+  
+  function profileClick(e)
+  {
+    setupProfile();
   }
   
   function loginClick(e)
@@ -105,6 +197,7 @@ window.addEventListener('DOMContentLoaded', function() {
     var response = JSON.parse(httpPost(url, params));
     
     var session = response['session'];
+    console.log(session);
     
     //If there is no session, we had a bad login
     if(!session)
@@ -118,26 +211,10 @@ window.addEventListener('DOMContentLoaded', function() {
     }
    
     //If we have the session, save it out
-    saveSession(session);
-1  }
-  
-  function saveSession(session)
-  {
-    name = session['name'];
-    sessionKey = session['key'];
+    saveSession(session, setupNowPlaying);
     
-    var sessionToSave = new Blob([JSON.stringify(session)], {type:'text/plain'});
-    var sdcard = navigator.getDeviceStorage('sdcard');
-    
-    //If we have a previous session, delete it so we can overwrite it
-    sdcard.delete('session.json');
-    
-    //Write out our session
-    var request = sdcard.addNamed(sessionToSave, 'session.json');
-    request.onsuccess=function(){console.log('Wrote out: ' + this.result);}
-    
-    //If we fail to write out, toast to the user
-    request.onerror=function(){console.log("Error writing settings, did you give permission?");console.log(this.error);}  
   }
 
+  
+  
 });

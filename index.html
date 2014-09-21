@@ -44,18 +44,45 @@
     </head>
     <body>
         <section>
-            <h1>Login</h1>
-            <div class="center loginFieldBlock">
-                <label for="usernameField" class="loginFieldLabel">Username:</label>
-                <input type="text" id="usernameField" class="loginField"/>
+            <div id="loginBlock">
+                <h1>Login</h1>
+                
+                <div class="center loginFieldBlock">
+                    <label for="usernameField" class="loginFieldLabel">Username:</label>
+                    <input type="text" id="usernameField" class="loginField"/>
+                </div>
+
+                <div class="center loginFieldBlock">
+                    <label for="password" class="loginFieldLabel">Password:</label>
+                    <input type="password" id="passwordField" class="loginField"/>
+                </div>
+
+                <button id="loginButton" class="center">Login</button>
             </div>
             
-            <div class="center loginFieldBlock">
-                <label for="password" class="loginFieldLabel">Password:</label>
-                <input type="password" id="passwordField" class="loginField"/>
+            <div id="settingsBlock">
+                <h1>Settings</h1>
             </div>
             
-            <button id="loginButton" class="center">Login</button>
+            <div id="nowPlayingBlock">
+                <h1>Now Playing</h1>
+            </div>
+            
+            <div id="statsBlock">
+                <h1>Stats</h1>
+            </div>
+            
+            <div id="profileBlock">
+                <h1>Profile</h1>
+            </div>
+            
         </section>
     </body>
+    
+    <footer>
+         <button id="settingsButton">Settings</button>
+         <button id="nowPlayingButton">NowPlaying</button>
+         <button id="statsButton">Stats</button>
+         <button id="profileButton">Profile</button>
+    </footer>
 </html>
