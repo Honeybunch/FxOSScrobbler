@@ -44,8 +44,6 @@
         <script type="text/javascript" src="js/libs/angular.min.js"></script>
         <script type="text/javascript" src="js/libs/angular-ui-router.min.js"></script>
          
-        <script type="text/javascript" src="js/login.js"></script>
-        <script type="text/javascript" src="js/last.fm.js"></script>
         <script type="text/javascript" src="js/controllers.js"></script>
     </head>
     <body ng-controller='AppCtrl' style="background-color: #1D1D1D">
@@ -65,7 +63,8 @@
                   <ul class="off-canvas-list">
                     <li><label>General</label></li>
                     <li><a ui-sref="nowplaying">Now Playing</a></li>
-                    <li><a ui-sref="statistics">Statistics</a></li>
+                    <li><a ui-sref="artists">Top Artists</a></li>
+                    <li><a ui-sref="tracks">Top Tracks</a></li>
                     <li><label>Settings</label></li>
                     <li><a ui-sref="profile">Profile</a></li>
                     <li><a ui-sref="settings">Settings</a></li>
