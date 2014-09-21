@@ -1,77 +1,9 @@
-html, body {
-  margin: 0;
-  padding: 0.5rem;
-}
-
-body {
-  font-size: 1rem;
-  background: #fff;
-}
-
-h1 {
-  text-align: center;
-  margin: 0 0 1rem 0;
-}
-
-p {
-  font-size: inherit;
-}
-
-footer
+.text-center
 {
-  position:absolute;
-  bottom: 0;
-  
-  width: 100%;
-  height: 2em;
-  
-  display:none;
+  text-align: center;
 }
 
-#settingsBlock{
-  display:none;
-}
-
-#loginBlock{
+.ng-hide
+{
   display: none;
 }
-#nowPlayingBlock{
-  display:none;
-}
-#statsBlock{
-  display:none;
-}
-
-#loginButton{
-  margin-top: 50%;
-
-  width: 50%;
-  height: 3em;
-}
-
-.center
-{
-  display:block;
-  margin-left: auto;
-  margin-right: auto;
-  float: none;
-}
-
-.loginFieldBlock
-{
-  margin-top: 1em;
-}
-
-.loginFieldLabel
-{
-    font-size: 10pt;
-}
-
-.loginField
-{
-  clear:both;
-  float:right;
-  font-size: 10pt;
-  width: 70%;
-}
-

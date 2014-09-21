@@ -1,0 +1,23 @@
+<h1 class="text-center">FxOS Scrobbler</h1>
+<h4 class="text-center" style="margin-top: -20px">Powered by
+  <img src="img/icons/lastfm_Logo.png" style="width: 60px; height: 16px; margin-top: -6px" />
+</h4>
+<form>
+  <div class="row" style="margin-top: 40px">
+    <div class="small-10 small-offset-1 columns">
+      <input type="text" placeholder="Last.FM Username" ng-model="user.name"/>
+    </div>
+  </div>
+  <div class="row">
+    <div class="small-10 small-offset-1 columns">
+      <input type="password" placeholder="Last.FM Password" ng-model="user.password"/>
+    </div>
+  </div>
+  <div class="row">
+    <div class="small-10 small-offset-1 columns">
+      <a class="button expand" ng-click="login()">Login</a>
+<!--       <a class="button expand" ui-sref="profile">Login</a> -->
+    </div>
+  </div>
+
+</form>

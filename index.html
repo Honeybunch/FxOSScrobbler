@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="scrobblerApp">
     <head>
         <meta charset="utf-8">
         <title>Last.fm Login</title>
@@ -13,8 +13,10 @@
           Read more about it here:
           https://developer.mozilla.org/Mozilla/Mobile/Viewport_meta_tag
         -->
-        <meta name="viewport" content="width=device-width">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="css/app.css">
+        <link rel="stylesheet" href="css/foundation.min.css">
+        <link rel="stylesheet" href="css/normalize.css">
 
         <!--
         Inline JavaScript code is not allowed for privileged and certified apps,
@@ -28,7 +30,6 @@
         execute the deferred files.
         Read about defer: https://developer.mozilla.org/Web/HTML/Element/script#attr-defer
         -->
-        <script type="text/javascript" src="js/app.js" defer></script>
 
         <!--
         The following two lines are for loading the localisations library
@@ -38,64 +39,46 @@
         <link rel="prefetch" type="application/l10n" href="data/locales.ini" />
         <script type="text/javascript" src="js/libs/l10n.js" defer></script>
         <script type="text/javascript" src="js/libs/md5.js"></script>
+        <script type="text/javascript" src="js/libs/jquery.min.js"></script>
+        <script type="text/javascript" src="js/libs/foundation.min.js"></script>
+        <script type="text/javascript" src="js/libs/angular.min.js"></script>
+        <script type="text/javascript" src="js/libs/angular-ui-router.min.js"></script>
          
-        <script type="text/javascript" src="js/login.js"></script>
-        <script type="text/javascript" src="js/last.fm.js"></script>
+        <script type="text/javascript" src="js/controllers.js"></script>
     </head>
-    <body>
-        <section>
-            <div id="loginBlock">
-                <h1>Login</h1>
-                
-                <div class="center loginFieldBlock">
-                    <label for="usernameField" class="loginFieldLabel">Username:</label>
-                    <input type="text" id="usernameField" class="loginField"/>
-                </div>
+    <body ng-controller='AppCtrl' style="background-color: #1D1D1D">
+        <div id="wrapper" class="off-canvas-wrap" data-offcanvas style="height: 100%; overflow: scroll">
+            <div class="inner-wrap" style="height: 100%">
+                <nav class="tab-bar" id="navbar" style="display: none">
+                  <section class="left-small">
+                    <a class="left-off-canvas-toggle menu-icon" ui-sref="profile" ng-click="toggleOffCanvas()"><span></span></a>
+                  </section>
 
-                <div class="center loginFieldBlock">
-                    <label for="password" class="loginFieldLabel">Password:</label>
-                    <input type="password" id="passwordField" class="loginField"/>
-                </div>
+                  <section class="middle tab-bar-section">
+                    <h1 class="title">FxOS Scrobbler</h1>
+                  </section>
+                </nav>
 
-                <button id="loginButton" class="center">Login</button>
-            </div>
-            
-            <div id="settingsBlock">
-                <h1>Settings</h1>
-            </div>
-            
-            <div id="nowPlayingBlock">
-                <h1>Now Playing</h1>
-            </div>
-            
-            <div id="statsBlock">
-                <h1>Stats</h1>
-                
-                <h4>Top Artists</h4>
-                
-                <div id="topArtists">
-                </div>
-                
-                <h4>Top Tracks</h4>
-                
-                <div id="topTracks">
-                </div>
-            </div>
-            
-            <div id="profileBlock">
-                <h1>Profile</h1>
-                
-                <div id="currentUser">
-                </div>
-            </div>
-            
-        </section>
+                <aside class="left-off-canvas-menu">
+                  <ul class="off-canvas-list">
+                    <li><label>General</label></li>
+                    <li><a ui-sref="nowplaying">Now Playing</a></li>
+                    <li><a ui-sref="artists">Top Artists</a></li>
+                    <li><a ui-sref="tracks">Top Tracks</a></li>
+                    <li><label>Settings</label></li>
+                    <li><a ui-sref="profile">Profile</a></li>
+                    <li><a ui-sref="settings">Settings</a></li>
+                  </ul>
+                  <a class="button expand" ng-click="logOff()" style="position:absolute; bottom: 0; margin: 0">Log Out</a>
+                </aside>
+
+                <section class="main-section">
+                    <div id="mainview" ui-view />
+                </section>
+
+            <a class="exit-off-canvas" ng-click="toggleOffCanvas()"></a>
+
+         </div>
+       </div>
     </body>
-    
-    <footer>
-         <button id="settingsButton">Settings</button>
-         <button id="nowPlayingButton">NowPlaying</button>
-         <button id="statsButton">Stats</button>
-         <button id="profileButton">Profile</button>
-    </footer>
 </html>

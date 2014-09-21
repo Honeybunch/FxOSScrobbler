@@ -1,0 +1,13 @@
+<h4 class="text-center">Top Artists</h4>
+<div id="topArtists">
+  <div ng-repeat="artist in artists" style="margin-bottom: 5px">
+    <div class="topArtist row">
+      <image src="{{artist.image[2]['#text']}}" class="small-3 columns" style="padding: 0"/>
+      <div class="small-9 columns">
+        <span style="font-weight: bold; font-size: 1.2rem"> {{ artist.name }} </span>
+        <br />
+        <sanp> {{ artist.playcount }} plays</span>
+      </div>
+    </div>
+  </div>
+</div>
