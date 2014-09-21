@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="scrobblerApp">
     <head>
         <meta charset="utf-8">
         <title>Last.fm Login</title>
@@ -15,6 +15,8 @@
         -->
         <meta name="viewport" content="width=device-width">
         <link rel="stylesheet" href="css/app.css">
+        <link rel="stylesheet" href="css/foundation.min.css">
+        <link rel="stylesheet" href="css/normalize.css">
 
         <!--
         Inline JavaScript code is not allowed for privileged and certified apps,
@@ -28,7 +30,6 @@
         execute the deferred files.
         Read about defer: https://developer.mozilla.org/Web/HTML/Element/script#attr-defer
         -->
-        <script type="text/javascript" src="js/app.js" defer></script>
 
         <!--
         The following two lines are for loading the localisations library
@@ -38,64 +39,52 @@
         <link rel="prefetch" type="application/l10n" href="data/locales.ini" />
         <script type="text/javascript" src="js/libs/l10n.js" defer></script>
         <script type="text/javascript" src="js/libs/md5.js"></script>
+        <script type="text/javascript" src="js/libs/angular.min.js"></script>
          
         <script type="text/javascript" src="js/login.js"></script>
         <script type="text/javascript" src="js/last.fm.js"></script>
+        <script type="text/javascript" src="js/controllers.js"></script>
     </head>
-    <body>
-        <section>
-            <div id="loginBlock">
-                <h1>Login</h1>
-                
-                <div class="center loginFieldBlock">
-                    <label for="usernameField" class="loginFieldLabel">Username:</label>
-                    <input type="text" id="usernameField" class="loginField"/>
+    <body ng-controller='AppCtrl' style="background-color: #1D1D1D">
+        <h1 ng-model="test" />
+        <h1 ng-show="active" class="text-center" style="color: white">FxOS Scrobbler</h1>
+        <h4 class="text-center" style="color: white; margin-top: -20px">Powered by
+        <img src="img/icons/lastfm_Logo.png" style="width: 60px; height: 16px; margin-top: -6px" />
+        </h4>
+        <form ng-show="active">
+            <div class="row" style="margin-top: 40px">
+                <div class="small-10 small-offset-1 columns">
+                    <label class="error">
+                       <input type="text" placeholder="Last.FM Username"/>
+                    </label>
+                    <small class="error">Invalid username</small>
                 </div>
+            </div>
+            
+            <div class="row">
+                <div class="small-10 small-offset-1 columns">
+                    <label class="error">
+                       <input type="text" placeholder="Last.FM Password"/>
+                    </label>
+                    <small class="error">Invalid password</small>
+                </div>
+            </div>
+            <div class="row">
+                <div class="small-10 small-offset-1 columns">
+                   <a class="button expand">Login</a>
+                </div>
+            </div>
+            
+        </form>
+        <div id="statsBlock">
+            <h1>Stats</h1>
+                
+            <h2>Top Artists</h2>
+                
+	    <div id="topArtists">
+	    </div>
 
-                <div class="center loginFieldBlock">
-                    <label for="password" class="loginFieldLabel">Password:</label>
-                    <input type="password" id="passwordField" class="loginField"/>
-                </div>
-
-                <button id="loginButton" class="center">Login</button>
-            </div>
-            
-            <div id="settingsBlock">
-                <h1>Settings</h1>
-            </div>
-            
-            <div id="nowPlayingBlock">
-                <h1>Now Playing</h1>
-            </div>
-            
-            <div id="statsBlock">
-                <h1>Stats</h1>
-                
-                <h4>Top Artists</h4>
-                
-                <div id="topArtists">
-                </div>
-                
-                <h4>Top Tracks</h4>
-                
-                <div id="topTracks">
-                </div>
-            </div>
-            
-            <div id="profileBlock">
-                <h1>Profile</h1>
-                
-                <div id="currentUser">
-                </div>
-            </div>
-            
-        </section>
+   	</div>
     </body>
     
-    <footer>
-         <button id="settingsButton">Settings</button>
-         <button id="nowPlayingButton">NowPlaying</button>
-         <button id="statsButton">Stats</button>
-         <button id="profileButton">Profile</button>
-    </footer>
 </html>

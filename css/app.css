@@ -1,22 +1,3 @@
-html, body {
-  margin: 0;
-  padding: 0.5rem;
-}
-
-body {
-  font-size: 1rem;
-  background: #fff;
-}
-
-h1 {
-  text-align: center;
-  margin: 0 0 1rem 0;
-}
-
-p {
-  font-size: inherit;
-}
-
 footer
 {
   position:absolute;
@@ -49,29 +30,7 @@ footer
   height: 3em;
 }
 
-.center
+.text-center
 {
-  display:block;
-  margin-left: auto;
-  margin-right: auto;
-  float: none;
+  text-align: center;
 }
-
-.loginFieldBlock
-{
-  margin-top: 1em;
-}
-
-.loginFieldLabel
-{
-    font-size: 10pt;
-}
-
-.loginField
-{
-  clear:both;
-  float:right;
-  font-size: 10pt;
-  width: 70%;
-}
-
