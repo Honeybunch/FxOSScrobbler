@@ -193,6 +193,26 @@ window.addEventListener('DOMContentLoaded', function() {
   function setupProfile()
   {
     hideOthers(PageState.PROFILE);
+    
+    var userParams = [{'key':'user', 'value':name}];
+    
+    var userRequest = craftRequest('user.getInfo', userParams);  
+    
+    //Get top artists
+    httpPost(userRequest.url, userRequest.params, function()
+      {
+        if(this.readyState == 4)
+        {
+          var user = JSON.parse(this.responseText);
+          
+          //Save artists to cache and write out
+          cache.user = user;
+          saveSettings();
+         
+          populateUser(user);
+        }
+      }
+    );
   }
   
   /*
@@ -322,7 +342,27 @@ window.addEventListener('DOMContentLoaded', function() {
   
   function populateUser(user)
   {
+    var user = user['user'];
     
+    var age = user['age'];
+    var country = user['country'];
+    var realname = user['realname'];
+    var gender = user['gender'];
+    var image = user['image'][1]['#text'];
+    var playCount = user['playcount'];
+    
+    var currentUser = document.querySelector('#currentUser');
+    currentUser.innerHTML = '';
+    
+    var userHTML = '<h4>'+name+'</h4>';
+    userHTML += '<p>Real Name: '+realname+'</p>';
+    userHTML += '<image src="'+image+'"></image>';
+    userHTML += '<p>Age: '+age+'</p>';
+    userHTML += '<p>Gender: '+gender+'</p>';
+    userHTML += '<p>Country: '+country+'</p>';
+    userHTML += '<p>Play Count: '+playCount+'</p>'
+    
+    currentUser.innerHTML = userHTML;
   }
   
   
