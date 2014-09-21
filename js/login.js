@@ -8,13 +8,7 @@ window.addEventListener('DOMContentLoaded', function() {
   // https://developer.mozilla.org/Web/JavaScript/Reference/Functions_and_function_scope/Strict_mode
   'use strict';
 
-  var translate = navigator.mozL10n.get;
-
-  navigator.mozL10n.ready();
-  
-  // We want to wait until the localisations library has loaded all the strings.
-  // So we'll tell it to let us know once it's ready.
-  navigator.mozL10n.once(start);
+  window.onload = start;
 
   // ---
   //Enum for determining what's being viewed on this page
@@ -147,7 +141,42 @@ window.addEventListener('DOMContentLoaded', function() {
   {
     hideOthers(PageState.STATS);
     
+    var params = [{'key':'user', 'value':name},
+                  {'key':'limit', 'value':5}];
     
+    var request = craftRequest('library.getArtists', params);
+    var topArtists = document.querySelector('#topArtists');
+    
+    //Gather all the user stats
+    httpPost(request.url, request.params, function()
+      {
+        if(this.readyState == 4)
+        {
+          var artists = JSON.parse(this.responseText);
+          
+          var artistsArray = artists['artists']['artist'];
+          
+          for(i=0; i<artistsArray.length; i++)
+           {
+             console.log(artistsArray[i]);
+             
+             var artist = artistsArray[i];              
+             
+             var images = artist['image'];
+             var image = images[2];
+      
+             var artistHTML = '<div id="topArtist'+(i+1)+'" class="topArtist">';
+             artistHTML += '<image src="'+image['#text']+'"/>';
+             artistHTML += '<p>'+artist['name']+'</p>';
+             artistHTML += '<p>Play Count:'+artist['playcount']+'</p>'
+             artistHTML += '<p>Tag Count: '+artist['tagcount']+'</p>'
+             artistHTML += '</div>';
+             
+             topArtists.innerHTML += artistHTML;
+           }
+        }
+      }
+    );
   }
   
   function setupProfile()
@@ -184,37 +213,43 @@ window.addEventListener('DOMContentLoaded', function() {
     var username = usernameField.value;
     var password = passwordField.value;
     
-    var apiSig = CryptoJS.MD5('api_key'+apiKey+'methodauth.getMobileSession'+'password'+password+'username'+username+apiSecret);
-    console.log(apiSig.toString());
-   
-    var url = 'https://ws.audioscrobbler.com/2.0/?method=auth.getMobileSession';
-    var params = 'password='+password+
-                 '&username='+username+
-                 '&api_key='+apiKey+
-                 '&api_sig='+apiSig+
-                 '&format=json';
+    //Create an array of parameters to craft the request with
+    var params = [{'key':'password', 'value':password},
+                  {'key':'username','value':username}];
     
-    var response = JSON.parse(httpPost(url, params));
+    var request = craftRequest('auth.getMobileSession', params);
     
-    var session = response['session'];
-    console.log(session);
-    
-    //If there is no session, we had a bad login
-    if(!session)
-    {
-      var error = response['error'];
-      var message = response['message'];
-      
-      console.log(error + ': ' + message);
-      alert('Error logging in: ' + message);
-      return;
-    }
-   
-    //If we have the session, save it out
-    saveSession(session, setupNowPlaying);
+    httpPost(request.url, request.params, onResponse);
     
   }
 
+  function onResponse()
+  {
+    if(this.readyState == 4)
+    {
+      var response = JSON.parse(this.responseText)
+
+      var session = response['session'];
+      console.log(session);
+
+      //If there is no session, we had a bad login
+      if(!session)
+      {
+        var error = response['error'];
+        var message = response['message'];
+
+        console.log(error + ': ' + message);
+        alert('Error logging in: ' + message);
+        return;
+      }
+
+      //If we have the session, save it out
+      saveSession(session, setupNowPlaying);
+      
+      //And change the block
+      setupNowPlaying();
+    }
+  }
   
   
 });

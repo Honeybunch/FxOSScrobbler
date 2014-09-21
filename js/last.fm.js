@@ -59,43 +59,58 @@ function loadSession(onsuccess, onerror)
   request.onerror = onerror;
 }
 
-function craftRequest(functionName, params)
+function craftRequest(methodName, params)
 {
-  var sigBase = 'api_key'+apiKey+functionName
+  var paramsString = '';
+  var sigBase = '';
   
+  //add other data to the params
+  params.push({'key':'method','value':methodName});
+  params.push({'key':'api_key','value':apiKey});
   
-  var apiSig = CryptoJS.MD5('api_key'+apiKey+func+'password'+password+'username'+username+apiSecret);
-  console.log(apiSig.toString());
+  //Gotta sort params alphabetically
+  params.sort(sortParams);
   
-  var url = 'https://ws.audioscrobbler.com/2.0/?method=auth.getMobileSession';
-  var params = 'password='+password+
-               '&username='+username+
-               '&api_key='+apiKey+
-               '&api_sig='+apiSig+
-               '&format=json';
-  
-  var response = JSON.parse(httpPost(url, params));
-  
-  var session = response['session'];
-  console.log(session);
-  
-  //If there is no session, we had a bad login
-  if(!session)
+  //Craft signiture base and paramaters strings
+  for(i =0; i < params.length; i++)
   {
-    var error = response['error'];
-    var message = response['message'];
+    var param = params[i];
+    var paramName = param.key;
+    var paramValue = param.value;
     
-    console.log(error + ': ' + message);
-    alert('Error logging in: ' + message);
-    return;
+    sigBase += paramName + paramValue;
+    
+    if(i > 0)
+      paramsString += '&';
+    
+    paramsString += paramName +'='+ paramValue;
   }
+  
+  sigBase += apiSecret;
+  
+  //Create the signature
+  var apiSig = CryptoJS.MD5(sigBase);
+  
+  //Add the api_sig onto the params
+  paramsString += '&api_sig=' + apiSig + "&format=json";
+  
+  var url = 'https://ws.audioscrobbler.com/2.0/?method=' + methodName;
+  
+  return {'url':url, 'params':paramsString};
 }
 
-function httpPost(url, params)
+function sortParams(a,b)
+{
+  var aKey = a.key.toLowerCase();
+  var bKey = b.key.toLowerCase(); 
+  return ((aKey < bKey) ? -1 : ((aKey > bKey) ? 1 : 0));
+}
+
+function httpPost(url, params, onsuccess)
 {
   var xmlHttp = new XMLHttpRequest();
-  xmlHttp.open('POST', url, false);
+  xmlHttp.open('POST', url, true);
   xmlHttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+  xmlHttp.onreadystatechange = onsuccess;
   xmlHttp.send(params);
-  return xmlHttp.responseText;
 }
