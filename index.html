@@ -39,45 +39,47 @@
         <link rel="prefetch" type="application/l10n" href="data/locales.ini" />
         <script type="text/javascript" src="js/libs/l10n.js" defer></script>
         <script type="text/javascript" src="js/libs/md5.js"></script>
+        <script type="text/javascript" src="js/libs/jquery.min.js"></script>
+        <script type="text/javascript" src="js/libs/foundation.min.js"></script>
         <script type="text/javascript" src="js/libs/angular.min.js"></script>
+        <script type="text/javascript" src="js/libs/angular-ui-router.min.js"></script>
          
         <script type="text/javascript" src="js/login.js"></script>
         <script type="text/javascript" src="js/last.fm.js"></script>
         <script type="text/javascript" src="js/controllers.js"></script>
     </head>
     <body ng-controller='AppCtrl' style="background-color: #1D1D1D">
-        <h1 class="text-center" style="color: white">FxOS Scrobbler</h1>
-        <h4 class="text-center" style="color: white; margin-top: -20px">Powered by
-        <img src="img/icons/lastfm_Logo.png" style="width: 60px; height: 16px; margin-top: -6px" />
-        </h4>
-        <form>
-            <div class="row" style="margin-top: 40px">
-                <div class="small-10 small-offset-1 columns">
-                    <input type="text" placeholder="Last.FM Username" ng-model="user.name"/>
-                </div>
-            </div>
-            
-            <div class="row">
-                <div class="small-10 small-offset-1 columns">
-                    <input type="password" placeholder="Last.FM Password" ng-model="user.password"/>
-                </div>
-            </div>
-            <div class="row">
-                <div class="small-10 small-offset-1 columns">
-                   <a class="button expand" ng-click="login()">Login</a>
-                </div>
-            </div>
-            
-        </form>
-        <div id="statsBlock">
-            <h1>Stats</h1>
-                
-            <h2>Top Artists</h2>
-                
-	    <div id="topArtists">
-	    </div>
+        <div id="wrapper" class="off-canvas-wrap" data-offcanvas style="height: 100%">
+            <div class="inner-wrap" style="height: 100%">
+                <nav class="tab-bar" id="navbar" style="display: none">
+                  <section class="left-small">
+                    <a class="left-off-canvas-toggle menu-icon" ui-sref="profile" ng-click="toggleOffCanvas()"><span></span></a>
+                  </section>
 
-   	</div>
+                  <section class="middle tab-bar-section">
+                    <h1 class="title">FxOS Scrobbler</h1>
+                  </section>
+                </nav>
+
+                <aside class="left-off-canvas-menu">
+                  <ul class="off-canvas-list">
+                    <li><label>General</label></li>
+                    <li><a ui-sref="nowplaying">Now Playing</a></li>
+                    <li><a ui-sref="statistics">Statistics</a></li>
+                    <li><label>Settings</label></li>
+                    <li><a ui-sref="profile">Profile</a></li>
+                    <li><a ui-sref="settings">Settings</a></li>
+                  </ul>
+                  <a class="button expand" ng-click="logOff()" style="position:absolute; bottom: 0; margin: 0">Log Out</a>
+                </aside>
+
+                <section class="main-section">
+                    <div ui-view style="height: 100%" />
+                </section>
+
+            <a class="exit-off-canvas" ng-click="toggleOffCanvas()"></a>
+
+         </div>
+       </div>
     </body>
-    
 </html>
