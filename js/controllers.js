@@ -47,11 +47,11 @@ var scrobblerApp = angular.module('scrobblerApp', ['ui.router']).config(['$state
         }).state('artists', {
           url: '/artists',
           templateUrl: 'artists.html',
-          controller: 'StatisticsCtrl'
+          controller: 'ArtistsCtrl'
         }).state('tracks', {
           url: '/tracks',
           templateUrl: 'tracks.html',
-          controller: 'StatisticsCtrl'
+          controller: 'TracksCtrl'
         }).state('settings', {
           url: '/settings',
           templateUrl: 'settings.html',
@@ -155,6 +155,7 @@ scrobblerApp.controller('AppCtrl', ['$scope', '$rootScope', '$state', 'apiFactor
   
   $scope.logOff = function()
   {
+    $rootScope.user = {name: '', password: ''};
     $('#navbar').toggle();
     $('#wrapper').removeClass('move-right');
     $('#loginview').show();
@@ -205,9 +206,8 @@ scrobblerApp.controller('SettingsCtrl', ['$scope', function ($scope) {
   
 }]);
 
-scrobblerApp.controller('StatisticsCtrl', ['$scope', 'apiFactory', function ($scope, apiFactory) {
+scrobblerApp.controller('ArtistsCtrl', ['$scope', 'apiFactory', function ($scope, apiFactory) {
     $scope.artists = [];
-    $scope.tracks = [];
   
     if (typeof window.sdcard !== 'undefined')
     {
@@ -215,35 +215,69 @@ scrobblerApp.controller('StatisticsCtrl', ['$scope', 'apiFactory', function ($sc
         {
             $scope.artists = window.sdcard.artists;
         }
+    }
+  
+    var params = [{'key':'user', 'value': $scope.user.name},
+                  {'key':'limit', 'value':5}];
+    
+    apiFactory.craftRequest('library.getArtists', params).success(function(data) {
+          if (typeof data.error === 'undefined')
+          {
+            console.log(data);
+            $scope.artists = data.artists.artist;
+            window.sdcard.artists = $scope.artists;
+            apiFactory.saveSession();
+            console.log('ok');
+          }
+          else
+          {
+             alert("Unable to retrieve artists. Did you specify a valid user?");
+          }
+    }).error(function(error) {
+          console.log(error);
+          console.log('Network error retrieving artists.');
+    });
+  
+    $scope.$on('$destroy', function()
+    {
+      $scope.artists = [];
+    });
+}]);
+
+scrobblerApp.controller('TracksCtrl', ['$scope', 'apiFactory', function ($scope, apiFactory) {
+    $scope.tracks = [];
+  
+    if (typeof window.sdcard !== 'undefined')
+    {
         if (typeof window.sdcard.tracks !== 'undefined')
         {
             $scope.tracks = window.sdcard.tracks;
         }
     }
   
-//     var params = [{'key':'user', 'value': $scope.user.name},
-//                   {'key':'limit', 'value':5}];
-    var params = [{'key':'user', 'value': "TheGadgetCat"},
+    var params = [{'key':'user', 'value': $scope.user.name},
                   {'key':'limit', 'value':5}];
-    
-    apiFactory.craftRequest('library.getArtists', params).success(function(data) {
-          console.log(data);
-          $scope.artists = data.artists.artist;
-          window.sdcard.artists = $scope.artists;
-          apiFactory.saveSession();
-          console.log('ok');
-    }).error(function(error) {
-          console.log(error);
-          console.log('Network error retrieving artists.');
-    });
   
     apiFactory.craftRequest('library.getTracks', params).success(function(data) {
-          console.log(data);
-          $scope.tracks = data.tracks.track;
-          window.sdcard.tracks = $scope.tracks;
-          apiFactory.saveSession();
+          if (typeof data.error === 'undefined')
+          {
+            console.log(data);
+            $scope.tracks = data.tracks.track;
+            window.sdcard.tracks = $scope.tracks;
+            apiFactory.saveSession();
+          }
+          else
+          {
+            alert("Unable to retrieve tracks. Did you specify a valid user?");
+          }
     }).error(function(error) {
           console.log(error);
           console.log('Network error retrieving tracks.');
+          alert('Network error.');
     });
+  
+  $scope.$on('$destroy', function()
+  {
+    $scope.tracks = [];
+  });
 }]);
