@@ -1,3 +1,14 @@
+'use strict';
+
+// $(function() {
+//     loadSession(setupNowPlaying, setupLogin);
+//     //If it has one, jump to the next activity
+//     if(previousSession)
+//     {
+      
+//     }
+// });
+
 var scrobblerApp = angular.module('scrobblerApp', ['ui.router']).config(['$stateProvider', '$urlRouterProvider', '$compileProvider',
     function($stateProvider, $urlRouterProvider, $compileProvider) {
         $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|app):/);
@@ -27,8 +38,68 @@ var scrobblerApp = angular.module('scrobblerApp', ['ui.router']).config(['$state
     }
 ]);
 
-scrobblerApp.controller('AppCtrl', ['$scope', '$state', function ($scope, $state) {
-  $scope.user = {name: '', password: ''};
+
+scrobblerApp.factory('apiFactory', ['$http', function ($http) {
+  var dataFactory = {};
+  var urlBase = 'https://ws.audioscrobbler.com/2.0/?method=';
+  var apiKey = "10379ce465238e42fbc1a7aef57b49cd";
+  var apiSecret = "4db90ca38c72a8b2e855ba19f1328f0d";
+  var sortParams = function (a,b)
+  {
+    var aKey = a.key.toLowerCase();
+    var bKey = b.key.toLowerCase();
+    return ((aKey < bKey) ? -1 : ((aKey > bKey) ? 1 : 0));
+  };
+  
+  dataFactory.craftRequest = function(methodName, params)
+  {
+    var i;
+    var paramsString = '';
+    var sigBase = '';
+
+    //add other data to the params
+    params.push({'key': 'method','value': methodName});
+    params.push({'key': 'api_key','value': apiKey});
+
+    //Gotta sort params alphabetically
+    params.sort(sortParams);
+
+    //Craft signature base and parameters strings
+    for(i = 0; i < params.length; i++)
+    {
+      var param = params[i];
+      var paramName = param.key;
+      var paramValue = param.value;
+
+      sigBase += paramName + paramValue;
+
+      if (i > 0)
+      {
+        paramsString += '&';
+      }
+
+      paramsString += paramName +'='+ paramValue;
+    }
+
+    sigBase += apiSecret;
+
+    //Create the signature
+    var apiSig = CryptoJS.MD5(sigBase);
+
+    //Add the api_sig onto the params
+    paramsString += '&api_sig=' + apiSig + "&format=json";
+
+    console.log(urlBase + methodName);
+    console.log(paramsString);
+    return $http.post(urlBase + methodName + "&" + paramsString);
+  };
+  
+  return dataFactory;
+  
+}]);
+
+scrobblerApp.controller('AppCtrl', ['$scope', '$rootScope', '$state', function ($scope, $rootScope, $state) {
+  $rootScope.user = {name: '', password: ''};
     
   $scope.toggleOffCanvas = function()
   {
@@ -39,42 +110,16 @@ scrobblerApp.controller('AppCtrl', ['$scope', '$state', function ($scope, $state
   {
     $('#navbar').toggle();
     $('#wrapper').removeClass('move-right');
+    $('#loginview').show();
     $state.go('index');
   }
   
   $scope.login = function(e)
   {
     $('#navbar').toggle();
+    $('#loginview').hide();
     $state.go('profile');
     return;
-    var apiKey = "10379ce465238e42fbc1a7aef57b49cd";
-    var apiSecret = "4db90ca38c72a8b2e855ba19f1328f0d";
-
-    var apiSig = CryptoJS.MD5('api_key'+apiKey+'methodauth.getMobileSession'+'password'+$scope.user.password+'username'+$scope.user.name+apiSecret);
-
-    var url = 'https://ws.audioscrobbler.com/2.0/?method=auth.getMobileSession';
-    var params = 'password='+$scope.user.password+
-                 '&username='+$scope.user.name+
-                 '&api_key='+apiKey+
-                 '&api_sig='+apiSig+
-                 '&format=json';
-    var response = JSON.parse(httpPost(url, params));
-
-    var session = response['session'];
-  
-    //If there is no session, we had a bad login
-    if(!session)
-    {
-      var error = response['error'];
-      var message = response['message'];
-      
-      console.log(error + ': ' + message);
-      alert('Error logging in: ' + message);
-      return;
-    }
-      
-    //If we have the session, save it out
-    $scope.saveSession(session);
 1  };
   
   $scope.saveSession = function(session)
@@ -90,10 +135,17 @@ scrobblerApp.controller('AppCtrl', ['$scope', '$state', function ($scope, $state
     
     //Write out our session
     var request = sdcard.addNamed(sessionToSave, 'session.json');
-    request.onsuccess=function(){console.log('Wrote out: ' + this.result);}
+    request.onsuccess = function()
+    {
+      console.log('Wrote out: ' + this.result);
+    }
     
     //If we fail to write out, toast to the user
-    request.onerror=function(){console.log("Error writing settings, did you give permission?");console.log(this.error);}  
+    request.onerror = function()
+    {
+      console.log("Error writing settings, did you give permission?");
+      console.log(this.error);
+    }  
   };
 }]);
 
@@ -109,6 +161,19 @@ scrobblerApp.controller('SettingsCtrl', ['$scope', function ($scope) {
   
 }]);
 
-scrobblerApp.controller('StatisticsCtrl', ['$scope', function ($scope) {  
+scrobblerApp.controller('StatisticsCtrl', ['$scope', 'apiFactory', function ($scope, apiFactory) {
+    $scope.artists = [];
   
+    console.log('Username in statsctrl');
+    console.log($scope.user.name);
+    var params = [{'key':'user', 'value': $scope.user.name},
+                  {'key':'limit', 'value':5}];
+    
+    apiFactory.craftRequest('library.getArtists', params).success(function(data) {
+          console.log(data);
+          $scope.artists = data.artists.artist;
+    }).error(function(error) {
+          console.log(error);
+          console.log('Network error retrieving statistics.');
+    });
 }]);

@@ -13,7 +13,7 @@
           Read more about it here:
           https://developer.mozilla.org/Mozilla/Mobile/Viewport_meta_tag
         -->
-        <meta name="viewport" content="width=device-width">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="css/app.css">
         <link rel="stylesheet" href="css/foundation.min.css">
         <link rel="stylesheet" href="css/normalize.css">
@@ -49,7 +49,7 @@
         <script type="text/javascript" src="js/controllers.js"></script>
     </head>
     <body ng-controller='AppCtrl' style="background-color: #1D1D1D">
-        <div id="wrapper" class="off-canvas-wrap" data-offcanvas style="height: 100%">
+        <div id="wrapper" class="off-canvas-wrap" data-offcanvas style="height: 100%; overflow: scroll">
             <div class="inner-wrap" style="height: 100%">
                 <nav class="tab-bar" id="navbar" style="display: none">
                   <section class="left-small">
@@ -74,7 +74,7 @@
                 </aside>
 
                 <section class="main-section">
-                    <div ui-view style="height: 100%" />
+                    <div id="mainview" ui-view />
                 </section>
 
             <a class="exit-off-canvas" ng-click="toggleOffCanvas()"></a>
