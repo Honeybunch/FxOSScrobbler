@@ -4,6 +4,56 @@ var apiSecret = "4db90ca38c72a8b2e855ba19f1328f0d";
 var name;
 var sessionKey;
 
+var cache = {
+  'user':null,
+  'artists':null,
+  'tracks':null,
+};
+
+function saveSettings()
+{
+  var settingsToSave = new Blob([JSON.stringify(cache)], {type:'text/plain'});
+  var sdcard = navigator.getDeviceStorage('sdcard');
+  
+  //Delete old settings
+  sdcard.delete('settings.json');
+  
+  //Write out settings
+  var request = sdcard.addNamed(settingsToSave, 'settings.json');
+  
+  request.onsuccess=function(){console.log('Successfully wrote settings!')};
+  request.onerror=function(){console.log('Error writing settings!')
+                             console.log(this.error)};
+}
+
+function loadSettings(onsuccess)
+{
+  //Try to get the settings 
+  var sdcard = navigator.getDeviceStorage('sdcard');
+  var request = sdcard.get('settings.json');
+  
+  //If the session file is loaded, read it 
+  request.onsuccess = function()
+  {
+    var file = this.result;
+    
+    var reader = new FileReader();
+    
+    //If we load successfully, save the settings into the cache object
+    reader.onload = function(e)
+    {
+      var result = reader.result;
+      cache = JSON.parse(reader.result);
+      
+      onsuccess();
+    }
+    reader.readAsText(file);
+  }
+  
+  //Otherwise log that there was an issue
+  request.onerror = function(){console.log('Error reading settings!')};
+}
+
 function saveSession(session, onsuccess)
 {
   name = session['name'];

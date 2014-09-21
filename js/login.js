@@ -57,6 +57,14 @@ window.addEventListener('DOMContentLoaded', function() {
     statsButton.onclick = function(e){statsClick(e)};
     profileButton.onclick = function(e){profileClick(e)};
     
+    //Read in the settings
+    loadSettings(function(){
+      //Populate pages with existing data
+      populateArtists(cache['artists']);
+      populateTracks(cache['tracks']);
+      populateUser(cache['user']);
+    });
+    
     loadSession(setupNowPlaying, setupLogin);
   }
   
@@ -141,39 +149,42 @@ window.addEventListener('DOMContentLoaded', function() {
   {
     hideOthers(PageState.STATS);
     
-    var params = [{'key':'user', 'value':name},
-                  {'key':'limit', 'value':5}];
+    var artistParams = [{'key':'user', 'value':name},
+                        {'key':'limit', 'value':5}];
+    var trackParams = [{'key':'user', 'value':name},
+                      {'key':'limit', 'value':5}];
     
-    var request = craftRequest('library.getArtists', params);
-    var topArtists = document.querySelector('#topArtists');
+    var artistRequest = craftRequest('library.getArtists', artistParams);
+    var trackRequest = craftRequest('library.getTracks', trackParams);    
     
-    //Gather all the user stats
-    httpPost(request.url, request.params, function()
+    //Get top artists
+    httpPost(artistRequest.url, artistRequest.params, function()
       {
         if(this.readyState == 4)
         {
           var artists = JSON.parse(this.responseText);
           
-          var artistsArray = artists['artists']['artist'];
+          //Save artists to cache and write out
+          cache.artists = artists;
+          saveSettings();
+         
+          populateArtists(artists);
+        }
+      }
+    );
+    
+    //Get top tracks
+    httpPost(trackRequest.url, trackRequest.params, function()
+      {
+        if(this.readyState == 4)
+        {
+          var tracks = JSON.parse(this.responseText);
           
-          for(i=0; i<artistsArray.length; i++)
-           {
-             console.log(artistsArray[i]);
-             
-             var artist = artistsArray[i];              
-             
-             var images = artist['image'];
-             var image = images[2];
-      
-             var artistHTML = '<div id="topArtist'+(i+1)+'" class="topArtist">';
-             artistHTML += '<image src="'+image['#text']+'"/>';
-             artistHTML += '<p>'+artist['name']+'</p>';
-             artistHTML += '<p>Play Count:'+artist['playcount']+'</p>'
-             artistHTML += '<p>Tag Count: '+artist['tagcount']+'</p>'
-             artistHTML += '</div>';
-             
-             topArtists.innerHTML += artistHTML;
-           }
+          //Save tracks to cache and write out
+          cache.tracks = tracks;
+          saveSettings();
+         
+          populateTracks(tracks);
         }
       }
     );
@@ -223,6 +234,10 @@ window.addEventListener('DOMContentLoaded', function() {
     
   }
 
+  /*
+   ETC Functions
+  */
+  
   function onResponse()
   {
     if(this.readyState == 4)
@@ -249,6 +264,65 @@ window.addEventListener('DOMContentLoaded', function() {
       //And change the block
       setupNowPlaying();
     }
+  }
+  
+  function populateArtists(artists)
+  {
+     var artistsArray = artists['artists']['artist'];
+     var topArtists = document.querySelector('#topArtists');      
+    
+     //clear old entries
+     topArtists.innerHTML = "";
+    
+     for(var i=0; i<artistsArray.length; i++)
+     {
+       var artist = artistsArray[i];              
+       
+       var images = artist['image'];
+       var image = images[2];
+     
+       var artistHTML = '<div id="topArtist'+(i+1)+'" class="topArtist">';
+       artistHTML += '<image src="'+image['#text']+'"/>';
+       artistHTML += '<p>'+artist['name']+'</p>';
+       artistHTML += '<p>Play Count:'+artist['playcount']+'</p>'
+       artistHTML += '<p>Tag Count: '+artist['tagcount']+'</p>'
+       artistHTML += '</div>';
+       
+       topArtists.innerHTML += artistHTML;
+     }
+  }
+  
+  function populateTracks(tracks)
+  {      
+     var topTracks = document.querySelector('#topTracks');
+     var tracksArray = tracks['tracks']['track'];   
+      
+     //clear old entries
+     topTracks.innerHTML = "";
+    
+     for(var i=0; i<tracksArray.length; i++)
+      {        
+        var track = tracksArray[i];              
+        
+        var name = track['name'];
+        var artist = track['artist']['name'];
+        var album = track['album']['name'];
+        var playCount = track['playcount'];
+      
+        var trackHTML = '<div id="topTrack'+(i+1)+'" class="topTrack">';
+        trackHTML += '<p>'+name+'</p>';
+        trackHTML += '<p>Artist: '+artist+'</p>';
+        trackHTML += '<p>Album: '+album+'</p>';
+        trackHTML += '<p>Play Count: '+playCount+'</p>'
+        trackHTML += '</div>';
+        
+        topTracks.innerHTML += trackHTML;
+      }
+  }
+  
+  function populateUser(user)
+  {
+    
   }
   
   
